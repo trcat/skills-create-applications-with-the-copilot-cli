@@ -2,10 +2,13 @@
 
 const { calculate } = require("./calculator");
 
-const SUPPORTED_OPERATIONS = ["add", "subtract", "multiply", "divide"];
+const BINARY_OPERATIONS = ["add", "subtract", "multiply", "divide", "modulo", "power"];
+const UNARY_OPERATIONS = ["squareRoot"];
+const SUPPORTED_OPERATIONS = [...BINARY_OPERATIONS, ...UNARY_OPERATIONS];
 
 function printUsage() {
   console.error("Usage: node src/index.js <operation> <left> <right>");
+  console.error("Usage: node src/index.js squareRoot <value>");
   console.error(`Supported operations: ${SUPPORTED_OPERATIONS.join(", ")}`);
 }
 
@@ -20,12 +23,7 @@ function parseNumber(value) {
 }
 
 function main(args) {
-  if (args.length !== 3) {
-    printUsage();
-    return 1;
-  }
-
-  const [operation, leftOperand, rightOperand] = args;
+  const [operation, ...operands] = args;
 
   if (!SUPPORTED_OPERATIONS.includes(operation)) {
     printUsage();
@@ -33,12 +31,35 @@ function main(args) {
   }
 
   try {
-    const left = parseNumber(leftOperand);
-    const right = parseNumber(rightOperand);
-    const result = calculate(operation, left, right);
+    if (BINARY_OPERATIONS.includes(operation)) {
+      if (operands.length !== 2) {
+        printUsage();
+        return 1;
+      }
 
-    console.log(result);
-    return 0;
+      const left = parseNumber(operands[0]);
+      const right = parseNumber(operands[1]);
+      const result = calculate(operation, left, right);
+
+      console.log(result);
+      return 0;
+    }
+
+    if (UNARY_OPERATIONS.includes(operation)) {
+      if (operands.length !== 1) {
+        printUsage();
+        return 1;
+      }
+
+      const value = parseNumber(operands[0]);
+      const result = calculate(operation, value);
+
+      console.log(result);
+      return 0;
+    }
+
+    printUsage();
+    return 1;
   } catch (error) {
     console.error(error.message);
 

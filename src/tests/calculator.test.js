@@ -46,8 +46,44 @@ test("rejects division by zero", () => {
 });
 
 test("rejects unsupported operations", () => {
-  assert.throws(() => calculate("power", 2, 3), {
-    message: "Unsupported operation: power",
+  assert.throws(() => calculate("cube", 2, 3), {
+    message: "Unsupported operation: cube",
+  });
+});
+
+test("computes modulo for positive integers", () => {
+  assert.equal(calculate("modulo", 10, 3), 1);
+});
+
+test("computes modulo from the extended-operations image example", () => {
+  assert.equal(calculate("modulo", 5, 2), 1);
+});
+
+test("rejects modulo by zero", () => {
+  assert.throws(() => calculate("modulo", 10, 0), {
+    message: "Modulo by zero is not allowed.",
+  });
+});
+
+test("computes powers for integer operands", () => {
+  assert.equal(calculate("power", 2, 4), 16);
+});
+
+test("computes powers from the extended-operations image example", () => {
+  assert.equal(calculate("power", 2, 3), 8);
+});
+
+test("computes square roots with one operand", () => {
+  assert.equal(calculate("squareRoot", 9), 3);
+});
+
+test("computes square roots from the extended-operations image example", () => {
+  assert.equal(calculate("squareRoot", 16), 4);
+});
+
+test("rejects square root of a negative number", () => {
+  assert.throws(() => calculate("squareRoot", -9), {
+    message: "Square root of a negative number is not allowed.",
   });
 });
 
@@ -62,7 +98,7 @@ test("prints result for valid cli input", () => {
 });
 
 test("prints usage for invalid operation", () => {
-  const result = spawnSync("node", [cliPath, "power", "2", "3"], {
+  const result = spawnSync("node", [cliPath, "cube", "2", "3"], {
     encoding: "utf8",
   });
 
@@ -86,6 +122,78 @@ test("prints error for division by zero in cli", () => {
 
   assert.equal(result.status, 1);
   assert.match(result.stderr, /Division by zero is not allowed\./);
+});
+
+test("prints result for modulo cli input", () => {
+  const result = spawnSync("node", [cliPath, "modulo", "10", "3"], {
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0);
+  assert.equal(result.stdout.trim(), "1");
+});
+
+test("prints result for modulo image example in cli", () => {
+  const result = spawnSync("node", [cliPath, "modulo", "5", "2"], {
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0);
+  assert.equal(result.stdout.trim(), "1");
+});
+
+test("prints result for power cli input", () => {
+  const result = spawnSync("node", [cliPath, "power", "2", "4"], {
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0);
+  assert.equal(result.stdout.trim(), "16");
+});
+
+test("prints result for power image example in cli", () => {
+  const result = spawnSync("node", [cliPath, "power", "2", "3"], {
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0);
+  assert.equal(result.stdout.trim(), "8");
+});
+
+test("prints result for squareRoot cli input", () => {
+  const result = spawnSync("node", [cliPath, "squareRoot", "9"], {
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0);
+  assert.equal(result.stdout.trim(), "3");
+});
+
+test("prints result for squareRoot image example in cli", () => {
+  const result = spawnSync("node", [cliPath, "squareRoot", "16"], {
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0);
+  assert.equal(result.stdout.trim(), "4");
+});
+
+test("prints error for negative squareRoot cli input", () => {
+  const result = spawnSync("node", [cliPath, "squareRoot", "-9"], {
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /Square root of a negative number is not allowed\./);
+});
+
+test("prints error for modulo by zero in cli", () => {
+  const result = spawnSync("node", [cliPath, "modulo", "5", "0"], {
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /Modulo by zero is not allowed\./);
 });
 
 test("prints usage when operands are missing", () => {
